@@ -1,0 +1,10 @@
+<mat-list *ngIf="hasTrips; else noTrips">
+    <mat-list-item *ngFor="let trip of trips">
+      {{ trip.name }}
+    </mat-list-item>
+  </mat-list>
+  
+  <ng-template #noTrips>
+    <p>No trips enrolled yet.</p>
+  </ng-template>
+  

@@ -1,0 +1,15 @@
+<mat-card *ngIf="trip">
+  <mat-card-title>{{ trip.title }}</mat-card-title>
+  <mat-card-content>
+    <p><strong>From:</strong> {{ trip.startPoint }}</p>
+    <p><strong>Vehicle:</strong> {{ trip.vehicle }}</p>
+    <p><strong>Attractions:</strong> {{ trip.attractions.join(', ') }}</p>
+    <p><strong>Cost:</strong> {{ trip.cost | currency }}</p>
+    <p>{{ trip.details }}</p>
+  </mat-card-content>
+  <mat-card-actions>
+    <button mat-raised-button color="primary" (click)="enroll()">
+      Enroll
+    </button>
+  </mat-card-actions>
+</mat-card>
