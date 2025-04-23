@@ -13,8 +13,15 @@ export class TripService {
   getAll(): Observable<any[]> {
     return this.http.get<any[]>(this.api);
   }
+  getAllEnrollments(): Observable<any[]> {
+    return this.http.get<any[]>(this.enrollApi);
+  }
 
+ 
 
+  getEnrolled(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.api}/enrolled`);
+  }
 
   getById(id: string): Observable<any> {
     return this.http.get<any>(`${this.api}/${id}`);
@@ -31,22 +38,14 @@ export class TripService {
   delete(id: string): Observable<any> {
     return this.http.delete<any>(`${this.api}/${id}`);
   }
-  getAllEnrollments(): Observable<any[]> {
-    return this.http.get<any[]>(this.enrollApi);
-  }
-  updateEnrollmentStatus(id: string, status: 'Approved' | 'Rejected'): Observable<any> {
-    return this.http.patch<any>(`${this.enrollApi}/${id}`, { status });
-  }
 
   /** enroll with seats */
   enroll(tripId: string, seats: number): Observable<any> {
     return this.http.post<any>(`${this.api}/${tripId}/enroll`, { seats });
   }
-  getEnrolled(): Observable<any[]> {
-    return this.http.get<any[]>('/api/enrollments');
-  }
-  
 
   /** admin: update enrollment status */
-
+  updateEnrollmentStatus(id: string, status: string): Observable<any> {
+    return this.http.put<any>(`${this.enrollApi}/${id}`, { status });
+  }
 }

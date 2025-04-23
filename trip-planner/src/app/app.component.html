@@ -4,8 +4,7 @@
   </button>
   <span>Trip Planner</span>
   <span class="spacer"></span>
-  <button *ngIf="auth.isLoggedIn$ | async" mat-button (click)="logout()">Logout</button>
-
+  <button *ngIf="auth.isLoggedIn()" mat-button (click)="logout()">Logout</button>
 </mat-toolbar>
 
 <mat-progress-bar *ngIf="(loading$ | async)" mode="indeterminate"></mat-progress-bar>

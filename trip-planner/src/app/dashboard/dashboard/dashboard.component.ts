@@ -1,11 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule }             from '@angular/common';
-import { MatCardModule }            from '@angular/material/card';
-import { MatButtonModule }          from '@angular/material/button';
-import { MatGridListModule }        from '@angular/material/grid-list';
+import { CommonModule } from '@angular/common';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatGridListModule } from '@angular/material/grid-list';
 
 import { TripService } from '../../services/trip.service';
 import { RouterModule } from '@angular/router';
+import { LoadingService } from '../../loading.service'; // Import LoadingService
+import { tap, startWith, finalize } from 'rxjs';
 
 @Component({
   selector: 'app-dashboard',
@@ -22,12 +24,21 @@ import { RouterModule } from '@angular/router';
 })
 export class DashboardComponent implements OnInit {
   available: any[] = [];
-  enrolled: any[]  = [];
+  enrolled: any[] = [];
 
-  constructor(private tripSvc: TripService) {}
+  constructor(private tripSvc: TripService, public loading: LoadingService) {}
 
   ngOnInit() {
-    this.tripSvc.getAll().subscribe(t => this.available = t);
-    this.tripSvc.getEnrolled().subscribe(t => this.enrolled = t);
+    this.loading.show(); // Show loading before fetching
+    this.tripSvc.getAll().pipe(
+      tap(t => this.available = t),
+      finalize(() => this.loading.hide()) // Hide loading after completion/error
+    ).subscribe();
+
+    this.loading.show(); // Show loading before fetching
+    this.tripSvc.getEnrolled().pipe(
+      tap(t => this.enrolled = t),
+      finalize(() => this.loading.hide()) // Hide loading after completion/error
+    ).subscribe();
   }
 }
