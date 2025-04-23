@@ -6,6 +6,7 @@ import { environment } from '../../environments/environment';
 @Injectable({ providedIn: 'root' })
 export class TripService {
   private api = `${environment.apiUrl}/trips`;
+  private enrollApi = environment.apiUrl.replace('/trips', '') + '/enrollments';
 
   constructor(private http: HttpClient) {}
 
@@ -13,9 +14,7 @@ export class TripService {
     return this.http.get<any[]>(this.api);
   }
 
-  getEnrolled(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.api}/enrolled`);
-  }
+
 
   getById(id: string): Observable<any> {
     return this.http.get<any>(`${this.api}/${id}`);
@@ -32,13 +31,22 @@ export class TripService {
   delete(id: string): Observable<any> {
     return this.http.delete<any>(`${this.api}/${id}`);
   }
-
-  enroll(id: string): Observable<any> {
-    return this.http.post<any>(`${this.api}/${id}/enroll`, {});
+  getAllEnrollments(): Observable<any[]> {
+    return this.http.get<any[]>(this.enrollApi);
+  }
+  updateEnrollmentStatus(id: string, status: 'Approved' | 'Rejected'): Observable<any> {
+    return this.http.patch<any>(`${this.enrollApi}/${id}`, { status });
   }
 
-  updateEnrollmentStatus(id: string, status: string): Observable<any> {
-    const url = `${environment.apiUrl.replace('/trips', '')}/enrollments/${id}`;
-    return this.http.put<any>(url, { status });
+  /** enroll with seats */
+  enroll(tripId: string, seats: number): Observable<any> {
+    return this.http.post<any>(`${this.api}/${tripId}/enroll`, { seats });
   }
+  getEnrolled(): Observable<any[]> {
+    return this.http.get<any[]>('/api/enrollments');
+  }
+  
+
+  /** admin: update enrollment status */
+
 }

@@ -13,6 +13,5 @@ export class AdminGuard {
     return true;
   }
 }
-
 export const AdminGuardFn: CanActivateFn = () =>
   inject(AdminGuard).canActivate();

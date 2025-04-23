@@ -2,30 +2,25 @@
   <button mat-icon-button (click)="sidenav.toggle()">
     <mat-icon>menu</mat-icon>
   </button>
-  <span>TripApp</span>
+  <span>Trip Planner</span>
   <span class="spacer"></span>
-  <button mat-button *ngIf="auth.isLoggedIn()" (click)="logout()">Logout</button>
+  <button *ngIf="auth.isLoggedIn$ | async" mat-button (click)="logout()">Logout</button>
+
 </mat-toolbar>
 
-<mat-progress-bar *ngIf="loading$ | async" mode="indeterminate"></mat-progress-bar>
+<mat-progress-bar *ngIf="(loading$ | async)" mode="indeterminate"></mat-progress-bar>
 
-<mat-sidenav-container>
+<mat-sidenav-container class="full-height">
   <mat-sidenav #sidenav mode="side" opened>
     <mat-nav-list>
-      <a mat-list-item routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
-      <a mat-list-item routerLink="/trips" routerLinkActive="active">All Trips</a>
-      <a mat-list-item routerLink="/trips/enrolled" routerLinkActive="active">My Trips</a>
-      <ng-container *ngIf="auth.userValue?.role === 'admin'">
-        <mat-divider></mat-divider>
-        <a mat-list-item routerLink="/admin" routerLinkActive="active">Admin Home</a>
-        <a mat-list-item routerLink="/admin/users" routerLinkActive="active">Users</a>
-        <a mat-list-item routerLink="/admin/trips" routerLinkActive="active">Manage Trips</a>
-        <a mat-list-item routerLink="/admin/enrollments" routerLinkActive="active">Enrollments</a>
-      </ng-container>
+      <a mat-list-item routerLink="/dashboard">Dashboard</a>
+      <a mat-list-item routerLink="/trips">All Trips</a>
+      <a mat-list-item routerLink="/trips/enrolled">My Trips</a>
+      <a *ngIf="auth.userValue?.role==='admin'" mat-list-item routerLink="/admin">Admin</a>
     </mat-nav-list>
   </mat-sidenav>
 
-  <mat-sidenav-content class="container">
+  <mat-sidenav-content>
     <router-outlet></router-outlet>
   </mat-sidenav-content>
 </mat-sidenav-container>

@@ -7,8 +7,8 @@ export async function getAllTrips(req, res) {
 }
 
 export async function getEnrolledTrips(req, res) {
-  // populate this user's enrolledTrips
-  const user = await User.findById(req.user._id).populate('enrolledTrips');
+  const user = await User.findById(req.user._id)
+    .populate('enrolledTrips');
   res.json(user.enrolledTrips);
 }
 
@@ -24,7 +24,11 @@ export async function createTrip(req, res) {
 }
 
 export async function updateTrip(req, res) {
-  const trip = await Trip.findByIdAndUpdate(req.params.id, req.body, { new: true });
+  const trip = await Trip.findByIdAndUpdate(
+    req.params.id,
+    req.body,
+    { new: true }
+  );
   if (!trip) return res.status(404).json({ error: 'Trip not found' });
   res.json(trip);
 }
@@ -35,15 +39,28 @@ export async function deleteTrip(req, res) {
 }
 
 export async function enrollTrip(req, res) {
-  const trip = await Trip.findById(req.params.id);
+  const { id }    = req.params;
+  const seats     = Number(req.body.seats) || 1;
+  const trip      = await Trip.findById(id);
   if (!trip) return res.status(404).json({ error: 'Trip not found' });
 
-  const user = await User.findById(req.user._id);
-  if (!user.enrolledTrips.includes(trip._id)) {
-    user.enrolledTrips.push(trip._id);
-    trip.usersEnrolled.push(user._id);
-    await user.save();
+  // 1) Create the Enrollment record
+  const already = await Enrollment.findOne({
+    user: req.user._id,
+    trip: id
+  });
+  if (!already) {
+    await Enrollment.create({
+      user: req.user._id,
+      trip: id,
+      seats,
+      status: 'Pending'
+    });
+
+    // 2) Also push into your Trip/User if you still want that
+    trip.usersEnrolled.push(req.user._id);
     await trip.save();
   }
-  res.json({ success: true });
+
+  return res.status(201).json({ success: true });
 }

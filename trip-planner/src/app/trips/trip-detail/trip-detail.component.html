@@ -1,15 +1,21 @@
 <mat-card *ngIf="trip">
   <mat-card-title>{{ trip.title }}</mat-card-title>
   <mat-card-content>
-    <p><strong>From:</strong> {{ trip.startPoint }}</p>
-    <p><strong>Vehicle:</strong> {{ trip.vehicle }}</p>
-    <p><strong>Attractions:</strong> {{ trip.attractions.join(', ') }}</p>
-    <p><strong>Cost:</strong> {{ trip.cost | currency }}</p>
+    <p><strong>From:</strong> {{ trip.startPoint }} → <strong>Cost per seat:</strong> \${{ trip.cost }}</p>
+    <p><strong>Seats left:</strong> {{ trip.seatsLeft || 0 }}</p>
     <p>{{ trip.details }}</p>
+
+    <form [formGroup]="form">
+      <mat-form-field appearance="outline">
+        <mat-label>Number of seats</mat-label>
+        <input matInput type="number" formControlName="seats" />
+        <mat-hint align="end">Max: {{ trip.seatsLeft }}</mat-hint>
+      </mat-form-field>
+
+      <button mat-raised-button color="primary" (click)="book()" [disabled]="form.invalid || loading">
+        Book &amp; Pay
+      </button>
+      <p *ngIf="trip.seatsLeft === 0" class="error">Sold out!</p>
+    </form>
   </mat-card-content>
-  <mat-card-actions>
-    <button mat-raised-button color="primary" (click)="enroll()">
-      Enroll
-    </button>
-  </mat-card-actions>
 </mat-card>

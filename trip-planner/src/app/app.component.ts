@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { MatSidenav } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -41,15 +41,11 @@ export class AppComponent implements OnInit, AfterViewInit {
   ) {}
 
   ngOnInit() {
-    setTimeout(() => {
-      this.loading$ = this.loading.loading$;
-    });
+    this.loading$ = this.loading.loading$;
   }
-  
 
   ngAfterViewInit() {
-    this.loading$ = this.loading.loading$;
-    
+    // nothing extra
   }
 
   logout() {

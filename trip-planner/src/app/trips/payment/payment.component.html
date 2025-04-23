@@ -1,19 +1,10 @@
 <mat-card>
-    <h2>Payment</h2>
-    <form [formGroup]="form" (ngSubmit)="pay()">
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Card Number</mat-label>
-        <input matInput formControlName="cardNumber" />
-      </mat-form-field>
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Expiry</mat-label>
-        <input matInput formControlName="expiry" placeholder="MM/YY" />
-      </mat-form-field>
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>CVV</mat-label>
-        <input matInput formControlName="cvv" type="password" />
-      </mat-form-field>
-      <button mat-raised-button color="primary" [disabled]="form.invalid">Pay</button>
-    </form>
-  </mat-card>
-  
+  <mat-card-title>Complete Payment</mat-card-title>
+  <mat-card-content>
+    <p>You are booking <strong>{{ seats }}</strong> seat(s).</p>
+
+    <button mat-raised-button color="accent" (click)="payWithRazorpay()" [disabled]="loading">
+      Pay & Book with Razorpay
+    </button>
+  </mat-card-content>
+</mat-card>

@@ -1,18 +1,7 @@
-@import '@angular/material/prebuilt-themes/indigo-pink.css';
+/* src/styles.scss */
+@import "@angular/material/prebuilt-themes/indigo-pink.css";
 
-html, body {
+body {
   margin: 0;
-  height: 100%;
-}
-
-.mat-sidenav-container {
-  height: calc(100vh - 64px); // subtract toolbar height
-}
-
-.spacer {
-  flex: 1 1 auto;
-}
-
-.active {
-  font-weight: bold;
+  font-family: Roboto, sans-serif;
 }

@@ -29,9 +29,9 @@ export const appRoutes: Routes = [
       {
         path: 'trips',
         children: [
-          { path: '',        component: TripListComponent },
-          { path: 'enrolled',component: EnrolledTripsComponent },
-          { path: 'payment/:tripId', component: PaymentComponent }
+          { path: '',         component: TripListComponent },
+          { path: 'enrolled', component: EnrolledTripsComponent },
+          { path: 'payment',  component: PaymentComponent }
         ]
       },
       { path: 'trip/:id', component: TripDetailComponent }
@@ -42,10 +42,10 @@ export const appRoutes: Routes = [
     path: 'admin',
     canActivate: [AuthGuardFn, AdminGuardFn],
     children: [
-      { path: '',           component: AdminDashboardComponent },
-      { path: 'users',      component: UserManagementComponent },
-      { path: 'trips',      component: TripManagementComponent },
-      { path: 'enrollments',component: EnrollmentManagementComponent }
+      { path: '',            component: AdminDashboardComponent },
+      { path: 'users',       component: UserManagementComponent },
+      { path: 'trips',       component: TripManagementComponent },
+      { path: 'enrollments', component: EnrollmentManagementComponent }
     ]
   },
 
