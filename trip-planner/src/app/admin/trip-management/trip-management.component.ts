@@ -65,14 +65,17 @@ export class TripManagementComponent implements OnInit {
 
   save() {
     if (this.form.invalid) return;
-
+  
     const data = { ...this.form.value };
     data.attractions = data.attractions
       .split(',')
       .map((a: string) => a.trim())
       .filter((a: string) => a); // remove empty strings
-
+  
+    // 🔧 Ensure seatsLeft is set on create
     if (!this.editingId) {
+      data.seatsLeft = data.totalSeats;
+      console.log('Submitting trip:', data); 
       this.svc.create(data).subscribe(() => {
         this.resetForm();
         this.load();
@@ -85,6 +88,7 @@ export class TripManagementComponent implements OnInit {
       });
     }
   }
+  
 
   edit(trip: any) {
     this.editingId = trip._id;
@@ -124,6 +128,7 @@ export class TripManagementComponent implements OnInit {
       attractions: '',
       cost: 0,
       details: ''
+      
     });
   }
 }

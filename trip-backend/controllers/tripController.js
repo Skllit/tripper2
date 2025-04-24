@@ -23,9 +23,26 @@ export async function getTripById(req, res) {
 
 export async function createTrip(req, res) {
   const { title, startPoint, vehicle, date, attractions, cost, totalSeats, details } = req.body;
-  const trip = new Trip({ title, startPoint, vehicle, date, attractions, cost, totalSeats, details });
-  await trip.save();
-  res.status(201).json(trip);
+
+  const trip = new Trip({
+    title,
+    startPoint,
+    vehicle,
+    date,
+    attractions,
+    cost,
+    totalSeats,
+    details,
+    seatsLeft: totalSeats // ✅ add this to satisfy the required field
+  });
+
+  try {
+    await trip.save();
+    res.status(201).json(trip);
+  } catch (error) {
+    console.error('Error creating trip:', error);
+    res.status(500).json({ error: 'Failed to create trip' });
+  }
 }
 
 export async function updateTrip(req, res) {
