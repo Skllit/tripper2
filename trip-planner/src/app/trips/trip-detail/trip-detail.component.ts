@@ -40,18 +40,26 @@ export class TripDetailComponent implements OnInit {
 
   ngOnInit() {
     this.id = this.route.snapshot.paramMap.get('id')!;
-    this.tripSvc.getById(this.id).subscribe(t => {
-      this.trip = t;
-      this.form = this.fb.group({
-        seats: [1, [Validators.required, Validators.min(1), Validators.max(t.seatsLeft || 1)]]
+    // ← use the newly added getById(...)
+    this.tripSvc.getById(this.id)
+      .subscribe((t: any) => {        // ← give t an explicit any type
+        this.trip = t;
+        this.form = this.fb.group({
+          seats: [
+            1,
+            [
+              Validators.required,
+              Validators.min(1),
+              Validators.max(t.seatsLeft || 1)
+            ]
+          ]
+        });
       });
-    });
   }
 
   book() {
     if (this.form.invalid) return;
     const seats = this.form.value.seats;
-    // navigate to payment with params
     window.location.href = `/trips/payment?tripId=${this.id}&seats=${seats}`;
   }
 }

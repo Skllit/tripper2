@@ -5,3 +5,20 @@ body {
   margin: 0;
   font-family: Roboto, sans-serif;
 }
+
+
+// @import "~@angular/material/theming";
+// @include mat-core();
+
+// // Custom palette
+// $primary: mat-palette($mat-indigo);
+// $accent:  mat-palette($mat-pink, A200, A100, A400);
+
+// $app-theme: mat-light-theme((
+//   color: ( primary: $primary, accent: $accent )
+// ));
+
+// @include angular-material-theme($app-theme);
+
+// .full-width { width: 100%; }
+// .trip-card { transition: transform .2s; &:hover { transform: scale(1.03);} }

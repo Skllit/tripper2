@@ -1,15 +1,18 @@
+
 import Trip from '../models/Trip.js';
+import Enrollment from '../models/Enrollment.js';
 import User from '../models/User.js';
+
+
+export async function getEnrolledTrips(req, res) {
+  const enrollments = await Enrollment.find({ user: req.user._id })
+    .populate('trip');
+  res.json(enrollments);
+}
 
 export async function getAllTrips(req, res) {
   const trips = await Trip.find();
   res.json(trips);
-}
-
-export async function getEnrolledTrips(req, res) {
-  const user = await User.findById(req.user._id)
-    .populate('enrolledTrips');
-  res.json(user.enrolledTrips);
 }
 
 export async function getTripById(req, res) {
@@ -19,16 +22,14 @@ export async function getTripById(req, res) {
 }
 
 export async function createTrip(req, res) {
-  const trip = await Trip.create(req.body);
+  const { title, startPoint, vehicle, date, attractions, cost, totalSeats, details } = req.body;
+  const trip = new Trip({ title, startPoint, vehicle, date, attractions, cost, totalSeats, details });
+  await trip.save();
   res.status(201).json(trip);
 }
 
 export async function updateTrip(req, res) {
-  const trip = await Trip.findByIdAndUpdate(
-    req.params.id,
-    req.body,
-    { new: true }
-  );
+  const trip = await Trip.findByIdAndUpdate(req.params.id, req.body, { new: true });
   if (!trip) return res.status(404).json({ error: 'Trip not found' });
   res.json(trip);
 }
@@ -37,30 +38,32 @@ export async function deleteTrip(req, res) {
   await Trip.findByIdAndDelete(req.params.id);
   res.json({ success: true });
 }
-
 export async function enrollTrip(req, res) {
-  const { id }    = req.params;
-  const seats     = Number(req.body.seats) || 1;
-  const trip      = await Trip.findById(id);
+  const { id } = req.params;
+  const seats = Number(req.body.seats) || 1;
+  const trip = await Trip.findById(id);
   if (!trip) return res.status(404).json({ error: 'Trip not found' });
 
-  // 1) Create the Enrollment record
-  const already = await Enrollment.findOne({
-    user: req.user._id,
-    trip: id
+  if (trip.seatsLeft < seats) return res.status(400).json({ error: 'Not enough seats' });
+
+  const user = req.user;
+  const already = await Enrollment.findOne({ user: user._id, trip: id, status: { $ne: 'Canceled' } });
+  if (already) return res.status(400).json({ error: 'Already booked' });
+
+  const enrollment = await Enrollment.create({
+    user: user._id,
+    trip: id,
+    seats,
+    customerEmail: user.email
   });
-  if (!already) {
-    await Enrollment.create({
-      user: req.user._id,
-      trip: id,
-      seats,
-      status: 'Pending'
-    });
 
-    // 2) Also push into your Trip/User if you still want that
-    trip.usersEnrolled.push(req.user._id);
-    await trip.save();
-  }
+  // 🆕 Add enrollment to user.enrolledTrips
+  user.enrolledTrips.push(enrollment._id);
+  await user.save(); // <- don't forget this!
 
-  return res.status(201).json({ success: true });
+  trip.usersEnrolled.push(user._id);
+  trip.seatsLeft -= seats;
+  await trip.save();
+
+  res.status(201).json(enrollment);
 }

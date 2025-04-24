@@ -1,6 +1,19 @@
-.full-width { width: 100%; }
-.form-row {
+.trip-management-card {
+  margin: 20px;
+  padding: 20px;
+}
+
+.trip-table-container {
+  overflow-x: auto;
+  margin-bottom: 30px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.actions {
+  margin-top: 20px;
   display: flex;
   gap: 16px;
-  margin-bottom: 16px;
 }

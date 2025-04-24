@@ -1,10 +1,15 @@
 <mat-card>
   <mat-card-title>Manage Trips</mat-card-title>
   <mat-card-content>
+    <table mat-table [dataSource]="trips" class="full-width mat-elevation-z2">
 
-    <table mat-table [dataSource]="trips" class="full-width">
+      <!-- Date -->
+      <ng-container matColumnDef="date">
+        <th mat-header-cell *matHeaderCellDef>Date</th>
+        <td mat-cell *matCellDef="let t">{{ t.date | date: 'mediumDate' }}</td>
+      </ng-container>
 
-      <!-- Title Column -->
+      <!-- Title -->
       <ng-container matColumnDef="title">
         <th mat-header-cell *matHeaderCellDef>Title</th>
         <td mat-cell *matCellDef="let t">{{ t.title }}</td>
@@ -43,50 +48,57 @@
         </td>
       </ng-container>
 
+      <!-- Table Rows -->
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
 
+    <!-- Trip Form -->
     <form [formGroup]="form" class="trip-form">
-      <mat-form-field appearance="outline">
-        <mat-label>Title</mat-label>
-        <input matInput formControlName="title">
-      </mat-form-field>
-
-      <mat-form-field appearance="outline">
-        <mat-label>Start Point</mat-label>
-        <input matInput formControlName="startPoint">
-      </mat-form-field>
-
-      <mat-form-field appearance="outline">
-        <mat-label>Vehicle</mat-label>
-        <input matInput formControlName="vehicle">
-      </mat-form-field>
-
-      <mat-form-field appearance="outline">
-        <mat-label>Total Seats</mat-label>
-        <input matInput type="number" formControlName="totalSeats">
-      </mat-form-field>
-
-      <mat-form-field appearance="outline">
-        <mat-label>Cost</mat-label>
-        <input matInput type="number" formControlName="cost">
-      </mat-form-field>
-
-      <mat-form-field appearance="outline">
-        <mat-label>Attractions (comma-separated)</mat-label>
-        <input matInput formControlName="attractions">
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Details</mat-label>
-        <textarea matInput formControlName="details"></textarea>
-      </mat-form-field>
-
-      <button mat-raised-button color="primary" type="submit" (click)="save()" [disabled]="form.invalid">
-        {{ editingId ? 'Update' : 'Create' }} Trip
+      <div class="grid">
+        <mat-form-field>
+          <mat-label>Title</mat-label>
+          <input matInput formControlName="title">
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>From</mat-label>
+          <input matInput formControlName="startPoint">
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Vehicle</mat-label>
+          <input matInput formControlName="vehicle">
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Date</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="date">
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Total Seats</mat-label>
+          <input matInput type="number" formControlName="totalSeats">
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Cost</mat-label>
+          <input matInput type="number" formControlName="cost">
+        </mat-form-field>
+        <mat-form-field class="full-width">
+          <mat-label>Attractions (comma-sep)</mat-label>
+          <input matInput formControlName="attractions">
+        </mat-form-field>
+        <mat-form-field class="full-width">
+          <mat-label>Details</mat-label>
+          <textarea matInput formControlName="details"></textarea>
+        </mat-form-field>
+      </div>
+      <button
+        type="button"
+        mat-raised-button
+        color="primary"
+        (click)="save()"
+        [disabled]="form.invalid">
+        {{ editingId ? 'Update Trip' : 'Create Trip' }}
       </button>
     </form>
-
   </mat-card-content>
 </mat-card>

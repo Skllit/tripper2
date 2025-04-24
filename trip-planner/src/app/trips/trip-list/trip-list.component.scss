@@ -1,0 +1,7 @@
+/* trip-list.component.scss */
+.trip-card {
+    display: flex; flex-direction: column;
+    mat-card-content { flex: 1; }
+    mat-card-actions { justify-content: flex-end; }
+  }
+  

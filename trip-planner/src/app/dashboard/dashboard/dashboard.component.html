@@ -15,13 +15,21 @@
 </mat-grid-list>
 
 <h2>My Enrollments</h2>
-<mat-grid-list cols="4" rowHeight="1:1" gutterSize="16px">
-  <mat-grid-tile *ngFor="let t of enrolled">
-    <mat-card color="accent">
-      <mat-card-title>{{ t.title }}</mat-card-title>
+<mat-grid-list cols="4" rowHeight="1:1.2" gutterSize="16px">
+  <mat-grid-tile *ngFor="let e of enrolled">
+    <mat-card>
+      <mat-card-title>{{ e.trip.title }}</mat-card-title>
       <mat-card-content>
-        <p>From: {{ t.startPoint }}</p>
+        <p><strong>From:</strong> {{ e.trip.startPoint }}</p>
+        <p><strong>Date:</strong> {{ e.trip.date | date: 'mediumDate' }}</p>
+        <p><strong>Seats:</strong> {{ e.seats }}</p>
+        <p><strong>Status:</strong> {{ e.status }}</p>
+        <p><strong>Booked:</strong> {{ e.bookingDate | date: 'short' }}</p>
+        <ng-container *ngIf="e.status === 'Canceled'">
+          <p><strong>Charge:</strong> {{ e.cancellationCharge | currency }}</p>
+        </ng-container>
       </mat-card-content>
     </mat-card>
   </mat-grid-tile>
 </mat-grid-list>
+

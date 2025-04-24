@@ -4,6 +4,8 @@ import { MatListModule } from '@angular/material/list';
 import { RouterModule } from '@angular/router';
 import { TripService } from '../../services/trip.service';
 import { ChangeDetectorRef } from '@angular/core';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { MatCardModule } from '@angular/material/card'; 
 
 @Component({
   selector: 'app-enrolled-trips',
@@ -11,6 +13,8 @@ import { ChangeDetectorRef } from '@angular/core';
   imports: [
     CommonModule,
     RouterModule,
+    MatCardModule,
+    MatGridListModule,
     MatListModule
   ],
   templateUrl: './enrolled-trips.component.html',
@@ -20,23 +24,17 @@ export class EnrolledTripsComponent implements OnInit {
   trips: any[] = [];
   hasTrips = false;
 
-  constructor(
-    private tripSvc: TripService,
-    private cd: ChangeDetectorRef
-  ) {}
+  constructor(private svc: TripService) {}
 
   ngOnInit() {
-    this.tripSvc.getEnrolled().subscribe({
-      next: (t) => {
-        this.trips = t;
-        this.hasTrips = t.length > 0;
-
-        // Prevent ExpressionChangedAfterItHasBeenCheckedError
-        this.cd.detectChanges();
-      },
-      error: (err) => {
-        console.error('Failed to fetch enrolled trips:', err);
-      }
+    this.svc.getEnrolled().subscribe(list => {
+      this.trips = list;
+      this.hasTrips = list.length > 0;
     });
+  }
+
+  cancel(id: string) {
+    if (!confirm('Cancel and incur charge?')) return;
+    this.svc.cancelEnrollment(id).subscribe(_ => this.ngOnInit());
   }
 }

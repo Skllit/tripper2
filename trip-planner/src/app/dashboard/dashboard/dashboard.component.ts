@@ -37,8 +37,11 @@ export class DashboardComponent implements OnInit {
 
     this.loading.show(); // Show loading before fetching
     this.tripSvc.getEnrolled().pipe(
-      tap(t => this.enrolled = t),
-      finalize(() => this.loading.hide()) // Hide loading after completion/error
+      tap(t => {
+        console.log('Enrolled trips:', t);
+        this.enrolled = t;
+      }),
+      finalize(() => this.loading.hide())
     ).subscribe();
   }
 }

@@ -1,92 +1,129 @@
 import { Component, OnInit } from '@angular/core';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+
 import { MatTableModule } from '@angular/material/table';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatGridListModule } from '@angular/material/grid-list';
+
 import { TripService } from '../../services/trip.service';
-import { CurrencyPipe } from '@angular/common';
 
 @Component({
   selector: 'app-trip-management',
   standalone: true,
-
   imports: [
+    CommonModule,
     ReactiveFormsModule,
     MatTableModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
     MatCardModule,
-    CurrencyPipe
+    MatIconModule,
+    MatTooltipModule,
+    MatGridListModule
   ],
-  providers: [CurrencyPipe] ,
   templateUrl: './trip-management.component.html',
   styleUrls: ['./trip-management.component.scss']
 })
 export class TripManagementComponent implements OnInit {
   form!: FormGroup;
-  displayedColumns = ['title', 'startPoint', 'cost', 'totalSeats', 'seatsLeft', 'actions'];
+  displayedColumns = ['date', 'title', 'startPoint', 'cost', 'totalSeats', 'seatsLeft', 'actions'];
   trips: any[] = [];
   editingId: string | null = null;
 
-  constructor(
-    private fb: FormBuilder,
-    private tripSvc: TripService
-  ) {}
+  constructor(private fb: FormBuilder, private svc: TripService) {}
 
   ngOnInit() {
     this.form = this.fb.group({
-      title:       ['', Validators.required],
-      startPoint:  ['', Validators.required],
-      vehicle:     ['', Validators.required],
-      totalSeats:  [1, [Validators.required, Validators.min(1)]],
+      title: ['', Validators.required],
+      startPoint: ['', Validators.required],
+      vehicle: ['', Validators.required],
+      date: [new Date(), Validators.required],
+      totalSeats: [1, [Validators.required, Validators.min(1)]],
       attractions: ['', Validators.required],
-      cost:        [0, [Validators.required, Validators.min(0)]],
-      details:     ['']
+      cost: [0, [Validators.required, Validators.min(0)]],
+      details: ['']
     });
     this.load();
   }
 
   load() {
-    this.tripSvc.getAll().subscribe(t => this.trips = t);
+    this.svc.getAll().subscribe(trips => {
+      this.trips = trips;
+    });
   }
 
   save() {
     if (this.form.invalid) return;
 
-    const data: any = {
-      ...this.form.value,
-      attractions: this.form.value.attractions.split(',').map((s: string) => s.trim())
-    };
+    const data = { ...this.form.value };
+    data.attractions = data.attractions
+      .split(',')
+      .map((a: string) => a.trim())
+      .filter((a: string) => a); // remove empty strings
 
-    // Initialize seatsLeft only when creating a new trip
     if (!this.editingId) {
-      data.seatsLeft = data.totalSeats;
+      this.svc.create(data).subscribe(() => {
+        this.resetForm();
+        this.load();
+      });
+    } else {
+      this.svc.update(this.editingId, data).subscribe(() => {
+        this.editingId = null;
+        this.resetForm();
+        this.load();
+      });
     }
-
-    const op = this.editingId
-      ? this.tripSvc.update(this.editingId, data)
-      : this.tripSvc.create(data);
-
-    op.subscribe(() => {
-      this.form.reset({ totalSeats: 1, cost: 0, attractions: '' });
-      this.editingId = null;
-      this.load();
-    });
   }
 
   edit(trip: any) {
     this.editingId = trip._id;
     this.form.patchValue({
       ...trip,
+      date: new Date(trip.date),
       attractions: trip.attractions.join(', ')
     });
   }
 
   delete(id: string) {
-    if (!confirm('Delete this trip?')) return;
-    this.tripSvc.delete(id).subscribe(() => this.load());
+    if (confirm('Delete this trip?')) {
+      this.svc.delete(id).subscribe(() => this.load());
+    }
+  }
+
+  resetForm() {
+    this.form.reset({
+      title: '',
+      startPoint: '',
+      vehicle: '',
+      date: new Date(),
+      totalSeats: 1,
+      attractions: '',
+      cost: 0,
+      details: ''
+    });
+  }
+  cancelEdit() {
+    this.editingId = null;
+    this.form.reset({
+      title: '',
+      startPoint: '',
+      vehicle: '',
+      date: new Date(),
+      totalSeats: 1,
+      attractions: '',
+      cost: 0,
+      details: ''
+    });
   }
 }
